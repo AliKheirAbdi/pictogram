@@ -4,3 +4,4 @@ from django.db import models
 class Post(models.Model):
     author = models.ForeignKey('auth.user',on_delete=models.CASCADE)
     image = models.ImageField(blank=True, null=True)
+    caption = models.TextFieldField()
