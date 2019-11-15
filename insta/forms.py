@@ -9,3 +9,9 @@ class PostForm(forms.ModelForm):
     helper.form_method = 'POST'
     helper.add_input(Submit('Post', 'Post', css_class='btn-primary'))
 
+    class Meta:
+        model = Post
+        fields = [
+            'image',
+            'caption'
+        ]
