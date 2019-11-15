@@ -16,8 +16,8 @@
         </div>
         <div class="post_image">
             {% if post.image != None %}
-                <img src="media/Hi_instagram_STLw1dr.png" alt="Photo">
-            {% endif %}
+                <img src="{{ post.image.url }}" alt="Photo">
+        {% endif %}
         </div>
         <div class="engagement">
             <a href=""><i class="fas fa-heart"></i></a>
@@ -34,9 +34,8 @@
         </div>
 
         <div class="time_posted">
-            {{post.published_date}}
+          Posted: {{post.created_date | timesince }} ago 
         </div>
-
     </div>
 
 {% endfor %}
