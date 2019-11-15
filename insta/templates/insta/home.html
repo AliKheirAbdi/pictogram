@@ -1,0 +1,36 @@
+{% extends 'insta/base.html' %}
+{%block title%} PictoGram{% endblock %}
+
+{% block content %}
+{% for post in posts %}
+    <div class="card">
+        <div class="card_header">
+            <div class="profile_image">
+
+            </div>
+            <div class="post_info">
+                <div class="post_name">{{ post.author }}</div>
+                <div class="post_location">Nairobi</div>
+            </div>
+            <div class="post_options"><a href=""><i class="fas fa-ellipsis-h"></i></a></div>
+        </div>
+        <div class="post_image">
+            {% if post.image != None %}
+                <img src="media/Hi_instagram_STLw1dr.png" alt="Photo">
+            {% endif %}
+        </div>
+        <div class="engagement">
+            <a href=""><i class="fas fa-heart"></i></a>
+            <a href=""><i class="far fa-comment"></i></a>
+            <a href=""><i class="far fa-share-square"></i></a>
+            <a href=""><i class="far fa-bookmark"></i></a>
+        </div>
+        <div class="likes">
+          <a href="#">310 likes</a>
+        </div>
+
+
+    </div>
+
+{% endfor %}
+{% endblock %}
