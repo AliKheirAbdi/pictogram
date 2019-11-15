@@ -28,7 +28,14 @@
         <div class="likes">
           <a href="#">310 likes</a>
         </div>
+        <div class="caption">
+            <a href=""><h2>{{ post.author }}</h2></a>
+            <span><p>{{ post.caption }}</p></span>
+        </div>
 
+        <div class="time_posted">
+            {{post.published_date}}
+        </div>
 
     </div>
 
