@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Picgram</title>
+
+
+    <link rel="stylesheet" href="{% static 'dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sprite.css' %}">
+    <link rel="stylesheet" href="{% static 'css/post.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/c-file-upload.css' %}">
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar fixed-top navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'home' %}">                   
+                </a>
+                <div class="navbar-nav ml-auto d-none d-lg-block">
+                    <div class="row">
+                        <div class="col"><a class="nav-link" href="{% url 'home' %}"><span
+                                    class="d-inline-block sprite-header-home"></span></a></div>
+                        <div class="col"><a class="nav-link" href="{% url 'new-post' %}"><span
+                                    class="d-inline-block sprite-header-new"></span></a></div>
+                        <div class="col"><a class="nav-link" href="#"><span
+                                    class="d-inline-block sprite-header-like"></span></a></div>
+                        <div class="col"><a class="nav-link" href="{% url 'profile' current_user.slug %}"><span
+                                    class="d-inline-block sprite-header-profile"></span></a></div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="content container">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-3 col-lg-3 mr-1">
+                        <img class="profile-avatar rounded-circle" src="{{ object.avatar.url }}" alt="" />
+                    </div>
+                    <div class="col-9 col-lg-8 pt-4">
+                        <div class="row">
+                            <div class="col-4">
+                                <h4 class="display-5" style="font-weight: bold; color: cornflowerblue">{{ object.username }}</h4>
+                            </div>
+                            <div class="col">
+                                {% if is_current_user %}
+                                <div>
+                                    <div class="row">
+                                        <div class="col"><button class="btn btn-secondary btn-sm" data-toggle="modal"
+                                                data-target="#exampleModal">Edit Profile</button></div>
+                                        <div class="col"><a class="btn btn-secondary btn-sm" href="logout/">Signout</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% else %}
+                                {% if following %}
+                                <button id="followBtn" class="btn btn-secondary btn-sm" onclick="findUserById({{ object.pk }}).unfollow()">Unfollow</button>
+                                {% else %}
+                                <button id="followBtn" class="btn btn-primary btn-sm"
+                                    onclick="findUserById({{ object.pk }}).follow()">Follow</button>
+                                {% endif %}
+                                {% endif %}
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col"><b>{{ object.posts.all.count }}</b> Posts</div>
+                            <div class="col"><b>{{ object.followers.count }}</b> Followers</div>
+                            <div class="col"><b>{{ object.following.count }}</b> Following</div>
+                            <div class="col"></div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <p id="bio">
+                                    {% if object.fullname %}
+                                    <b>{{ object.fullname }}</b><br>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <br>
+                <div class="row">
+                    <div class="col">
+                        <div class="row">
+                        {% if following or is_current_user or object.bp %}
+                         {% if object.posts.all.count == 0 %}
+                            <p>No shared posts</p>
+                            {% endif %}
+                            {% for p in object.posts.all %}
+                            <div class="col-md-4 col-12">
+                                <article class="post-preview">
+                                    <img src="{{ p.image.url }}" class="post-preview-image" alt="">
+                                </article>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        Profile is Private.Follow to view their posts
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        {% if is_current_user %}
+        <!-- Modal -->
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" value="{{ user.pk }}">
+                            <br>
+                            <div class="form-group row">
+                                <label for="avatar" class="col-sm-2 col-form-label"><img src="{{ user.avatar.url }}"
+                                        alt="" class="d-block footer-nav-profile rounded-circle float-right"
+                                        draggable="false"></label>
+                                <div class="col-sm-10">
+                                    <div class="row">
+                                        <div class="col"  style="font-weight: bold;font-size: 26px">{{ user.username }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col"><input type="file" name="avatar" id="avatar"
+                                                class="inputfile inputfile-3 hidden" multiple="false">
+                                            <label for="avatar"><span class="change-avatar">Change Profile Photo</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <br>
+                            <div class="form-group row">
+                                <label for="fullname" class="col-sm-2 col-form-label text-right">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" maxlength="30" class="form-control" name="fullname" id="fullname"
+                                        placeholder="Name" value="{{ user.fullname }}">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="form-group row">
+                                <label for="username" class="col-sm-2 col-form-label text-right">Username</label>
+                                <div class="col-sm-10">
+                                    <input type="text" maxlength="50" required="true" class="form-control" name="username" id="username"
+                                        placeholder="Username" value="{{ user.username }}">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="form-group row">
+                                <label for="bio" class="col-sm-2 col-form-label text-right">Bio</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" maxlength="100" id="bio" name="bio" placeholder="Tell us about yourself......"
+                                        value="{{ user.bio }}">{{ user.bio }}</textarea>
+                                </div>
+                            </div>
+                    
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+
+        <footer class="d-lg-none fixed-bottom">
+            <div class="card container footer-nav">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-1"></div>
+                        <div class="col-2">
+                            <span class="d-block sprite-footer-nav-home-before"></span>
+                        </div>
+                        <div class="col-2">
+                            <span class="d-block sprite-footer-nav-search-before"></span>
+                        </div>
+                        <div class="col-2">
+                            <span class="d-block sprite-footer-nav-new-before"></span>
+                        </div>
+                        <div class="col-2">
+                            <span class="d-block sprite-footer-nav-like-before"></span>
+                        </div>
+                        <div class="col-2">
+                            <img src="img/42002584_995628447264876_5615867123332022272_n.jpg" alt=""
+                                class="d-block footer-nav-profile rounded-circle">
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+
+
+    <script src="{% static 'dist/js/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'dist/js/bootstrap.min.js' %}"></script>
+
+    <script src="{% static 'js/ajax.js' %}"></script>
+    <script src="{% static 'js/users.js' %}"></script>
+    <script src="{% static 'js/user.js' %}"></script>
+    <script src="{% static 'js/posts.js' %}"></script>
+    <script src="{% static 'js/post.js' %}"></script>
+    <script src="{% static 'js/locations.js' %}"></script>
+    <script src="{% static 'js/location.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+            document.getElementById('bio').innerHTML = document.getElementById('bio').innerHTML + parseCaption('{{ object.bio|linebreaks  }}');
+        });
+        users.unshift(new User({{ object.pk }}, '{{object.username}}', '{{object.avatar.url}}', '{{object.slug}}'));
+    </script>
+</body>
+
+</html>
